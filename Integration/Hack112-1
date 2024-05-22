@@ -1,0 +1,313 @@
+from cmu_graphics import *
+import time
+
+def onAppStart(app):
+    app.height = 400
+    app.width = 400
+    app.cookbook_main_x = app.width/2-120
+    app.cookbook_main_y = app.height/2-150
+    app.cookbook_main_width = 200
+    app.cookbook_main_height = 300
+    app.cookbook_label_x = app.cookbook_main_x + app.cookbook_main_width-3
+    app.cookbook_label_y = app.cookbook_main_y
+    app.cookbook_label_width = 50
+    app.cookbook_label_height = app.cookbook_main_height/5
+    app.cookbook_burger = False
+    app.cookbook_hotdog = False
+    app.cookbook_ramen = False
+    app.cookbook_sushi = False
+    app.cookbook_pie = False
+    app.cookbook_foodlist = ['Burger', 'Hotdog', 'Ramen', 'Sushi', 'Pie']
+    app.drawCookbook = True
+    app.continueX, app.continueY = app.cookbook_main_x+app.cookbook_main_width-60, app.cookbook_main_y+app.cookbook_main_height+10
+    app.continueWidth, app.continueHeight = app.cookbook_label_x-app.cookbook_main_width+1/2*app.cookbook_label_width, 20
+    app.drawMove = False
+
+    app.drawSausage = False
+    app.drawBread = False
+    app.drawMayon = False
+    app.drawFire = False
+
+    app.cx=200
+    app.cy=200
+    app.pause=False
+    app.pauseCounter = 0
+
+    app.noSausage = False
+    app.noBread = False
+    app.noMayon = False
+    app.noFire = False
+
+    app.bag = set()
+    app.cuttingBoard = False
+    app.makeHotdog = False
+    app.hotdog = False
+    app.hotdogclickyes = False
+
+
+def redrawAll(app):
+    drawImage('kitchen.png',0, 0)
+    if app.drawCookbook:
+        drawCookbook(app)
+    if app.drawMove:
+        drawMove(app)
+        drawBag(app)
+    if app.drawSausage and not app.noSausage:
+        drawSausage(app)
+    if app.drawBread and not app.noBread:
+        drawBread(app)
+    if app.drawMayon and not app.noMayon:
+        drawMayon(app)
+    if app.drawFire and not app.noFire:
+        drawFire(app)
+    if app.cuttingBoard:
+        drawFinal(app)
+    if app.makeHotdog:
+        if app.hotdog:
+            drawRect(200, 200, 150, 100, fill='lightgray', border='blue', align='center')
+            drawImage('cuttingboard_inPixio.jpeg', 200, 200, width=200, height=120, align='center')
+            drawLabel('Do you want to', 200, 190, size=15, font='monospace')
+            drawLabel('make a hotdog?', 200, 210, size=15, font='monospace')
+            drawRect(200, 320, 80, 50, fill='blue', border='black', align='center')
+            drawLabel('Yes', 200, 320, fill='white', size=15, font='monospace', align='center')
+    
+        if app.hotdogclickyes:
+            drawImage('hotdog.png', 200, 200, width=300, height=300, align='center')
+
+    print(f'hotdogclickyes, {app.hotdogclickyes},{app.makeHotdog}')
+
+
+def drawFinal(app):
+    drawRect(200, 200, 200, 100, fill='lightgray', border='blue', align='center')
+    drawLabel('You got all the ingredients!', 200, 180)
+    drawLabel('Go to the cutting board now,' , 200, 200)
+    drawLabel('my poor CMU kid', 200, 220)
+
+
+
+def drawBag(app):
+    bagX, bagY = 340, 220
+    width, height = 400-bagX, 100//4
+    foodList = ['sausage', 'bread', 'mayon', 'fire']
+    colorList = ['lightgray', 'lightgray', 'lightgray', 'lightgray']
+    for i in range(4):
+        if foodList[i] in app.bag:
+            colorList[i] = 'limegreen'
+        drawRect(bagX, bagY+height*i, width, height, fill=colorList[i], border='black', opacity=80)
+        drawLabel(foodList[i], bagX+width/2, bagY+height/2+height*i, 
+                  font='monospace', bold=True)
+    
+        
+
+def drawMove(app):
+    drawImage('character_1.png', app.cx, app.cy, width=70, height=70, align='center')
+    
+
+def drawCookbook(app):
+    
+    drawRect(app.cookbook_main_x, app.height/2-150, app.cookbook_main_width, 
+             app.cookbook_main_height, fill='beige', opacity=80,
+             border='saddlebrown', borderWidth=5)
+    
+    for i in range(5):
+        drawRect(app.cookbook_label_x, app.cookbook_label_y+i*app.cookbook_label_height, 
+                 app.cookbook_label_width, app.cookbook_label_height, 
+                 fill='white', border='saddlebrown', borderWidth=3)
+
+    for i in range(5):
+        drawLabel(app.cookbook_foodlist[i], app.cookbook_label_x+app.cookbook_label_width/2, 
+                  app.cookbook_label_y+app.cookbook_label_height/2+i*app.cookbook_label_height,
+                  font='monospace', bold=True, borderWidth=5)
+
+    if app.cookbook_burger:
+        drawBurger(app)
+
+    if app.cookbook_hotdog:
+        drawHotdog(app)
+
+    if app.cookbook_ramen:
+        drawRamen(app)
+    
+    if app.cookbook_sushi:
+        drawSushi(app)
+
+    if app.cookbook_pie:
+        drawPie(app)
+ 
+
+def drawSausage(app):
+    drawImage('sausage.png', 200, 200, width=200, height=200, align='center')
+
+def drawBread(app):
+    drawImage('bread.png', 200, 200, width=200, height=200, align='center')
+
+def drawFire(app):
+    drawImage('fire.png', 200, 200, width=200, height=200, align='center')
+
+def drawMayon(app):
+    drawImage('mayonnaise.png', 200, 200, width=200, height=200, align='center')
+
+
+def drawBurger(app):
+    drawLabel('Burger', app.cookbook_main_x+app.cookbook_main_width/2, 
+              app.height/2 - 2*app.cookbook_label_height, font='monospace', size=20)
+    drawLine(app.cookbook_main_x+50, app.cookbook_main_y+50, 
+             app.cookbook_main_x+app.cookbook_main_width-50, app.cookbook_main_y+50)
+ 
+    
+def drawHotdog(app):
+    drawLabel('Hotdog', app.cookbook_main_x+app.cookbook_main_width/2, 
+              app.height/2 - 2*app.cookbook_label_height, font='monospace', size=20)
+    drawLine(app.cookbook_main_x+50, app.cookbook_main_y+50, 
+             app.cookbook_main_x+app.cookbook_main_width-50, app.cookbook_main_y+50)
+    # imageWidth, imageHeight = getImageSize('Scotty.png')
+    # width, height = imageWidth//2, imageHeight//2
+    drawImage('mayonnaise.png', app.cookbook_main_x+60, app.cookbook_main_y+50+180,
+              width=60, height=60, align='center')
+    drawImage('Scotty.png', app.cookbook_main_x+60, app.cookbook_main_y+50+60, 
+              width=60, height=60, align='center')
+    drawImage('bread.png', app.cookbook_main_x+app.cookbook_main_width-60, app.cookbook_main_y+50+60,
+              width=60, height=60, align='center')
+    drawImage('fire.png', app.cookbook_main_x+app.cookbook_main_width-60, app.cookbook_main_y+50+180,
+              width=60, height=60, align='center')
+    
+    
+    drawRect(app.continueX, app.continueY,
+             app.continueWidth, app.continueHeight, fill='blue', opacity=80)
+    drawLabel('Continue', app.cookbook_label_x-5, app.cookbook_main_y+app.cookbook_main_height+10+1/2*app.continueHeight,
+              font='monospace', fill='white', size=16)
+    
+    
+    
+def drawRamen(app):
+    drawLabel('Ramen', app.cookbook_main_x+app.cookbook_main_width/2, 
+              app.height/2 - 2*app.cookbook_label_height, font='monospace', size=20)
+    drawLine(app.cookbook_main_x+50, app.cookbook_main_y+50, 
+             app.cookbook_main_x+app.cookbook_main_width-50, app.cookbook_main_y+50)
+    
+def drawSushi(app):
+    drawLabel('Sushi', app.cookbook_main_x+app.cookbook_main_width/2, 
+              app.height/2 - 2*app.cookbook_label_height, font='monospace', size=20)
+    drawLine(app.cookbook_main_x+50, app.cookbook_main_y+50, 
+             app.cookbook_main_x+app.cookbook_main_width-50, app.cookbook_main_y+50)
+    
+def drawPie(app):
+    drawLabel('Pie', app.cookbook_main_x+app.cookbook_main_width/2, 
+              app.height/2 - 2*app.cookbook_label_height, font='monospace', size=20)
+    drawLine(app.cookbook_main_x+50, app.cookbook_main_y+50, 
+             app.cookbook_main_x+app.cookbook_main_width-50, app.cookbook_main_y+50)
+
+
+
+
+def onMousePress(app, mouseX, mouseY):
+    cookbook_labels_list = [False, False, False, False, False]
+    for i in range(5):
+        if (mouseX > app.cookbook_label_x and mouseX < app.cookbook_label_x+app.cookbook_label_width 
+            and mouseY > app.cookbook_main_y+app.cookbook_label_height*i
+            and mouseY < app.cookbook_main_y+app.cookbook_label_height*(i+1)):
+            for j in range(5):
+                cookbook_labels_list[j] = False
+            cookbook_labels_list[i] = True
+            app.cookbook_burger = cookbook_labels_list[0]
+            app.cookbook_hotdog = cookbook_labels_list[1]
+            app.cookbook_ramen = cookbook_labels_list[2]
+            app.cookbook_sushi = cookbook_labels_list[3]
+            app.cookbook_pie = cookbook_labels_list[4]
+    if app.cookbook_hotdog:
+        if (mouseX > app.continueX and mouseX < app.continueX + app.continueWidth
+            and mouseY > app.continueY and mouseY < app.continueY + app.continueHeight):
+            app.drawCookbook = False
+            app.drawMove = True
+    if app.cuttingBoard:
+        if mouseX>160 and mouseX<240 and mouseY<345 and mouseY>295:
+            app.hotdogclickyes = True
+
+def onKeyHold(app, keys):
+    if app.drawMove and not app.pause:
+        if 'w' in keys:
+            app.cy -= 2
+        elif 's' in keys:
+            app.cy += 2
+        if 'a' in keys:
+            app.cx -= 2
+        elif 'd' in keys:
+            app.cx += 2
+
+    if app.cx<115 and app.cy<145:
+        if app.drawMove and not app.pause and not app.noSausage:
+            app.pause = True
+            app.drawSausage = True
+            app.bag.add('sausage')
+
+    elif app.cx<80 and app.cy>270:        
+        if app.drawMove and not app.pause and not app.noBread:
+            app.pause = True
+            app.drawBread = True
+            app.bag.add('bread')
+
+    elif app.cx>290 and app.cy<180:
+        if app.drawMove and not app.pause and not app.noFire:
+            app.pause = True
+            app.drawFire = True
+            app.bag.add('fire')
+    
+    elif app.cx>280 and app.cy>300:
+        if app.drawMove and not app.pause and not app.noMayon:
+            app.pause = True
+            app.drawMayon = True
+            app.bag.add('mayon')
+
+    if app.bag == {'sausage', 'bread', 'fire', 'mayon'}:
+        app.cuttingBoard = True
+    
+    if app.cuttingBoard:
+        if app.cx>270 and app.cy<120:
+            app.makeHotdog = True
+            app.hotdog = True
+
+        
+        
+
+            # app.bad += ['bread']
+            # app.kitchen.remove('bread')
+    # if app.drawMove and not app.pause and not app.noMayon:
+    #     if:
+    #         app.drawMayon = True
+    #         app.pause = True
+    
+    # if app.drawMove and not app.pasue and not app.noMayon:
+    #     if:
+    #         app.drawMayon = True
+    #         app.pause = True
+
+
+def onStep(app):
+    if app.pause:
+        app.pauseCounter += 1
+   
+
+    if app.pauseCounter == 30:
+        app.pause = False
+        app.pauseCounter = 0
+        if 'fire' in app.bag:
+            app.noFire = True
+        if 'sausage' in app.bag:
+            app.noSausage = True
+        if 'bread' in app.bag:
+            app.noBread = True
+        if 'mayon' in app.bag:
+            app.noMayon = True
+    
+
+
+def onMouseDrag(app, mouseX, mouseY):
+    pass
+
+def onMouseRelease(app, mouseX, mouseY):
+    pass
+
+def main():
+    runApp()
+
+main()

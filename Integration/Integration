@@ -1,0 +1,945 @@
+from cmu_graphics import *
+import random
+# import playsound
+
+def onAppStart(app):
+    app.intro = True
+    app.oneAndTwo = False
+    app.three = False
+    app.four = False
+
+    ##### Tait's Codes #####
+    app.counter = 0
+    app.stepsPerSecond = 1
+    app.startGame = False
+    app.rightClick = False
+    #  url = 'cmu://664646/26106870/creepyMusic.mp3'
+    #  playsound('creepy.mp3')
+    #  app.sound = Sound('Creepy.mp3')
+    #  app.soundPause = True
+    #  checkingSoundPausing(app)
+    #  app.sound.play()
+
+    ##### Felicia's Codes #####
+    #room1
+    app.x1, app.y1 = 100, 100
+    app.size = app.width/2
+    app.blockSize = app.size//3
+    app.blocks = [[3, 4, 6], [0, 1, 2], [5, 8, 7]]
+    app.zeroIndex = (1,0)
+    app.highlight = (0,0)
+    app.prevBox = None
+    app.boxPressed = False
+    app.room1 = True
+    app.puzzle1 = False
+    app.page = 1
+    #room2
+    app.hints = ['use arrows to scroll through hints', 'your friend is a carnivore', 
+                 'the hot dog lover is surrounded by 2 Japanese food fans', 
+                 'the ramen loving witch is always first', 
+                 'snakes are lactose intolerant']
+    app.hintNum = 0
+    app.start = False
+    app.room2 = False
+    app.success2 = None
+    app.puzzle2 = app.buttons2 = False
+    app.buttonWidth = app.width/5
+    app.diameter = app.buttonWidth * 8/9
+    app.x2Centers = set()
+    app.oCenters = set()
+    app.circleCenters = createCircleList(app)
+    app.circleAnswer = 2
+    app.x2 = app.width/2
+    app.y = app.height/2
+
+    app.counter = 0
+    app.successText = "...i’m so hungry...so hungry...so hungry...what do i do? i’m scared they are going to eat me...i think i saw a kitchen on the map"
+    
+
+    ##### Troy's Codes #####
+    app.cookbook_main_x = app.width/2-120
+    app.cookbook_main_y = app.height/2-150
+    app.cookbook_main_width = 200
+    app.cookbook_main_height = 300
+    app.cookbook_label_x = app.cookbook_main_x + app.cookbook_main_width-3
+    app.cookbook_label_y = app.cookbook_main_y
+    app.cookbook_label_width = 50
+    app.cookbook_label_height = app.cookbook_main_height/5
+    app.cookbook_burger = False
+    app.cookbook_hotdog = False
+    app.cookbook_ramen = False
+    app.cookbook_sushi = False
+    app.cookbook_pie = False
+    app.cookbook_foodlist = ['Burger', 'Hotdog', 'Ramen', 'Sushi', 'Pie']
+    app.drawCookbook = True
+    app.continueX, app.continueY = app.cookbook_main_x+app.cookbook_main_width-60, app.cookbook_main_y+app.cookbook_main_height+10
+    app.continueWidth, app.continueHeight = app.cookbook_label_x-app.cookbook_main_width+1/2*app.cookbook_label_width, 20
+    app.drawMove = False
+
+    app.drawSausage = False
+    app.drawBread = False
+    app.drawMayon = False
+    app.drawFire = False
+
+    app.cx=200
+    app.cy=200
+    app.pause=False
+    app.pauseCounter = 0
+
+    app.noSausage = False
+    app.noBread = False
+    app.noMayon = False
+    app.noFire = False
+
+    app.bag = set()
+    app.cuttingBoard = False
+    app.makeHotdog = False
+    app.hotdog = False
+    app.hotdogclickyes = False
+
+    ##### Tait's Codes #####
+    app.width = 400
+    app.height = 400
+    app.countForText = 0
+    app.doorOne = False
+    app.doorTwo = False
+    app.doorThree = False
+    app.rightArrow = True
+    app.doorList = [False, False, False]
+    app.aliveOrDearth = [False, True, False]
+
+
+
+def redrawAll(app): 
+    if app.intro:
+        ##### Tait's Codes
+        if 1 > app.counter:
+            drawSceneOne(app)
+        elif 0.5 < app.counter < 3:
+            drawSceneTwo(app)
+        elif 2.5 < app.counter < 5:
+            drawSceneThree(app)
+        elif  4.5 < app.counter and app.rightClick == False:
+            drawSceneFour(app)
+        elif 4.5 < app.counter and app.rightClick == True:
+            drawSceneOne(app)
+        drawConversation(app)
+        drawButton(app)
+        drawScreen(app)
+
+    ###### Felicia's Codes ######
+    if app.oneAndTwo:
+        if app.room2:
+            drawRoom2(app)
+        elif app.room1:
+            drawRoom1(app)
+
+
+    ##### Troy's Codes #####
+    if app.three:
+        drawImage('kitchen.png',0, 0)
+        if app.drawCookbook:
+            drawCookbook(app)
+        if app.drawMove:
+            drawMove(app)
+            drawBag(app)
+        if app.drawSausage and not app.noSausage:
+            drawSausage(app)
+        if app.drawBread and not app.noBread:
+            drawBread(app)
+        if app.drawMayon and not app.noMayon:
+            drawMayon(app)
+        if app.drawFire and not app.noFire:
+            drawFire(app)
+        if app.cuttingBoard:
+            drawFinal(app)
+        if app.makeHotdog:
+            if app.hotdog:
+                drawRect(200, 200, 150, 100, fill='lightgray', border='blue', align='center')
+                drawImage('cuttingboard_inPixio.png', 200, 200, width=200, height=120, align='center')
+                drawLabel('Do you want to', 200, 190, size=15, font='monospace')
+                drawLabel('make a hotdog?', 200, 210, size=15, font='monospace')
+                drawRect(200, 320, 80, 50, fill='blue', border='black', align='center')
+                drawLabel('Yes', 200, 320, fill='white', size=15, font='monospace', align='center')
+        
+            if app.hotdogclickyes:
+                drawImage('hotdog.png', 200, 200, width=300, height=300, align='center')
+    ##### Tait's Codes #####
+    if app.four:
+        #drawBackground(app)
+        if app.countForText == 0 or app.countForText == 1 or app.countForText == 3 or app.countForText == 4:
+            drawS0134(app)
+        elif app.countForText == 2 and (checkFalse(app.doorList) == 2):
+            drawS2(app)
+        elif app.countForText == 2 and (checkFalse(app.doorList) == 3):
+            drawDoor(app)
+        elif app.countForText == 5 and (checkFalse(app.doorList) == 2):
+            if app.doorList[1] == True:
+                drawWin(app)
+            elif app.doorList[1] == False:
+                drawLost(app)
+        elif app.countForText == 5 and (checkFalse(app.doorList) == 3):
+            drawDoor(app)
+        elif app.countForText == 6:
+            drawEnd(app)
+
+        drawButton(app)
+        drawConversation_act5(app)
+
+
+############################# Tait's Codes  ####################################
+# first graph is scene 1
+def drawSceneOne(app):
+    imageWidth, imageHeight = 400, 400
+    drawImage('scene1.jpeg', app.width/2, app.height/2, width = imageWidth, height = imageHeight, align = 'center')
+
+# second scene
+def drawSceneTwo(app):
+    imageWidth, imageHeight = 400, 400
+    drawImage('scene2.jpeg', app.width/2, app.height/2, width = imageWidth, height = imageHeight, align = 'center')
+
+
+# third scene
+def drawSceneThree(app):
+    imageWidth, imageHeight = 400, 400
+    drawImage('scene3.jpeg', app.width/2, app.height/2, width = imageWidth, height = imageHeight, align = 'center')
+
+# forth scene
+def drawSceneFour(app):
+    imageWidth, imageHeight = 400, 400
+    drawImage('scene4.jpeg', app.width/2, app.height/2, width = imageWidth, height = imageHeight, align = 'center')
+
+# draw the witch conversation
+def drawConversation(app):
+    if 0.5 < app.counter < 3:
+        #drawRect(10, 320, 250, 50, fill = 'cornSilk', border = 'white', borderWidth = 2)
+        drawLabel('Me:', 180, 310, fill = 'black', size = 15, bold = True, align = 'left')
+        drawLabel('Wow an old house...', 180, 325, fill = 'black', size = 15, bold = True, align = 'left')
+        drawLabel('Never came here before!', 180, 340, fill = 'black', size = 15, bold = True, align = 'left')
+    elif 2.5 < app.counter < 5:
+        #drawRect(10, 320, 250, 50, fill = 'cornSilk', border = 'white', borderWidth = 2)
+        drawLabel('Troy:', 50, 310, fill = 'black', size = 15, bold = True, align = 'left')
+        drawLabel('Lets prank them!', 50, 325, fill = 'black', size = 15, bold = True, align = 'left')
+    elif  4.5 < app.counter:
+        if app.rightClick == False:
+            #drawRect(10, 320, 250, 50, fill = 'cornSilk', border = 'white', borderWidth = 2)
+            drawLabel('Me:', 180, 310, fill = 'black', size = 15, bold = True, align = 'left')
+            drawLabel('Aight lets go...', 180, 325, fill = 'black', size = 15, bold = True, align = 'left')
+            drawLabel('Click -right- to end conversation', 180, 340, fill = 'red', size = 10, bold = True, align = 'left')
+
+# draw the button for the whole scarry house
+def drawButton(app):
+    if app.rightClick == True:
+        drawRect(200, 200, 400, 400, fill = 'cornSilk', border = 'white', borderWidth = 2, align = 'center', opacity = 0)
+
+# draw the temporay black screen
+def drawScreen(app):
+    if app.startGame == True:
+        drawRect(200, 200, 400, 400, fill = 'black', align = 'center')
+
+########################### Troy's Codes #######################################
+def drawFinal(app):
+    drawRect(200, 200, 200, 100, fill='lightgray', border='blue', align='center')
+    drawLabel('You got all the ingredients!', 200, 180)
+    drawLabel('Go to the cutting board now,' , 200, 200)
+    drawLabel('my poor CMU kid', 200, 220)
+
+
+
+def drawBag(app):
+    bagX, bagY = 340, 220
+    width, height = 400-bagX, 100//4
+    foodList = ['sausage', 'bread', 'mayon', 'fire']
+    colorList = ['lightgray', 'lightgray', 'lightgray', 'lightgray']
+    for i in range(4):
+        if foodList[i] in app.bag:
+            colorList[i] = 'limegreen'
+        drawRect(bagX, bagY+height*i, width, height, fill=colorList[i], border='black', opacity=80)
+        drawLabel(foodList[i], bagX+width/2, bagY+height/2+height*i, 
+                  font='monospace', bold=True)
+    
+        
+
+def drawMove(app):
+    drawImage('character_1.png', app.cx, app.cy, width=70, height=70, align='center')
+    
+
+def drawCookbook(app):
+    
+    drawRect(app.cookbook_main_x, app.height/2-150, app.cookbook_main_width, 
+             app.cookbook_main_height, fill='beige', opacity=80,
+             border='saddlebrown', borderWidth=5)
+    
+    for i in range(5):
+        drawRect(app.cookbook_label_x, app.cookbook_label_y+i*app.cookbook_label_height, 
+                 app.cookbook_label_width, app.cookbook_label_height, 
+                 fill='white', border='saddlebrown', borderWidth=3)
+
+    for i in range(5):
+        drawLabel(app.cookbook_foodlist[i], app.cookbook_label_x+app.cookbook_label_width/2, 
+                  app.cookbook_label_y+app.cookbook_label_height/2+i*app.cookbook_label_height,
+                  font='monospace', bold=True, borderWidth=5)
+
+    if app.cookbook_burger:
+        drawBurger(app)
+
+    if app.cookbook_hotdog:
+        drawHotdog(app)
+
+    if app.cookbook_ramen:
+        drawRamen(app)
+    
+    if app.cookbook_sushi:
+        drawSushi(app)
+
+    if app.cookbook_pie:
+        drawPie(app)
+ 
+
+def drawSausage(app):
+    drawImage('sausage.png', 200, 200, width=200, height=200, align='center')
+
+def drawBread(app):
+    drawImage('bread.png', 200, 200, width=200, height=200, align='center')
+
+def drawFire(app):
+    drawImage('fire_inPixio.png', 200, 200, width=200, height=200, align='center')
+
+def drawMayon(app):
+    drawImage('mayonaa_inPixio.png', 200, 200, width=200, height=200, align='center')
+
+
+def drawBurger(app):
+    drawLabel('Burger', app.cookbook_main_x+app.cookbook_main_width/2, 
+              app.height/2 - 2*app.cookbook_label_height, font='monospace', size=20)
+    drawLine(app.cookbook_main_x+50, app.cookbook_main_y+50, 
+             app.cookbook_main_x+app.cookbook_main_width-50, app.cookbook_main_y+50)
+        
+    drawImage('burgerbread_inPixio.png', app.cookbook_main_x+60, app.cookbook_main_y+50+180,
+              width=80, height=80, align='center')
+    drawImage('isaackap_inPixio.png', app.cookbook_main_x+60, app.cookbook_main_y+50+60, 
+              width=80, height=80, align='center')
+    drawImage('pkhoudar_inPixio.png', app.cookbook_main_x+app.cookbook_main_width-60, app.cookbook_main_y+50+60,
+              width=80, height=80, align='center')
+    
+def drawHotdog(app):
+    drawLabel('Hotdog', app.cookbook_main_x+app.cookbook_main_width/2, 
+              app.height/2 - 2*app.cookbook_label_height, font='monospace', size=20)
+    drawLine(app.cookbook_main_x+50, app.cookbook_main_y+50, 
+             app.cookbook_main_x+app.cookbook_main_width-50, app.cookbook_main_y+50)
+    # imageWidth, imageHeight = getImageSize('Scotty.png')
+    # width, height = imageWidth//2, imageHeight//2
+    drawImage('mayonaa_inPixio.png', app.cookbook_main_x+60, app.cookbook_main_y+50+180,
+              width=60, height=60, align='center')
+    drawImage('Scotty.png', app.cookbook_main_x+60, app.cookbook_main_y+50+60, 
+              width=60, height=60, align='center')
+    drawImage('bread.png', app.cookbook_main_x+app.cookbook_main_width-60, app.cookbook_main_y+50+60,
+              width=60, height=60, align='center')
+    drawImage('fire_inPixio.png', app.cookbook_main_x+app.cookbook_main_width-60, app.cookbook_main_y+50+180,
+              width=60, height=60, align='center')
+    
+    
+    drawRect(app.continueX, app.continueY,
+             app.continueWidth, app.continueHeight, fill='blue', opacity=80)
+    drawLabel('Continue', app.cookbook_label_x-5, app.cookbook_main_y+app.cookbook_main_height+10+1/2*app.continueHeight,
+              font='monospace', fill='white', size=16)
+    
+    
+    
+def drawRamen(app):
+    drawLabel('Ramen', app.cookbook_main_x+app.cookbook_main_width/2, 
+              app.height/2 - 2*app.cookbook_label_height, font='monospace', size=20)
+    drawLine(app.cookbook_main_x+50, app.cookbook_main_y+50, 
+             app.cookbook_main_x+app.cookbook_main_width-50, app.cookbook_main_y+50)
+
+
+    
+def drawSushi(app):
+    drawLabel('Sushi', app.cookbook_main_x+app.cookbook_main_width/2, 
+              app.height/2 - 2*app.cookbook_label_height, font='monospace', size=20)
+    drawLine(app.cookbook_main_x+50, app.cookbook_main_y+50, 
+             app.cookbook_main_x+app.cookbook_main_width-50, app.cookbook_main_y+50)
+    
+def drawPie(app):
+    drawLabel('Pie', app.cookbook_main_x+app.cookbook_main_width/2, 
+              app.height/2 - 2*app.cookbook_label_height, font='monospace', size=20)
+    drawLine(app.cookbook_main_x+50, app.cookbook_main_y+50, 
+             app.cookbook_main_x+app.cookbook_main_width-50, app.cookbook_main_y+50)
+
+
+
+########################### Felicia's Codes ####################################
+def createCircleList(app):
+    z = app.diameter*2/7
+    result = []
+    for i in range(5):
+        xCoor = app.width/2 + z/2 - 2*app.diameter - 2*z + i*(app.diameter + z)
+        yCoor = app.height*2/7
+        result.append((xCoor,yCoor))
+    return result
+
+def drawRoom1(app):
+    if app.puzzle1:
+        drawImage('room1-2-1.jpg', 0, 0)
+        for row in range(3):
+            for col in range(3):
+                label = app.blocks[row][col]
+                if app.blocks[row][col] == 0:
+                    box = 'lightGray'
+                    label = ''
+                elif (row, col) == app.highlight:
+                    if app.boxPressed:
+                        box = 'darkGray'
+                    else:
+                        box = 'darkGray'
+                else:
+                    box = 'silver'
+                drawRect(app.x1+col*app.blockSize, app.y1+row*app.blockSize, app.blockSize, app.blockSize, fill = box, border = 'gainsboro')
+                drawLabel(f'{label}', app.x1+col*app.blockSize + app.blockSize/2, app.y1+row*app.blockSize + app.blockSize/2, size = 30, font = 'monospace', bold = True)
+    else:
+        start = max(0, app.counter-25)
+        if app.page == 1:
+            drawImage('room1-1.jpeg', 0, 0)
+            text = "Oh no! My friends are locked in cages! What should I do?"
+            drawLabel(f'{text[start:app.counter+1]}', app.width*2/3, app.width*3/4 + app.width/10, font = 'monospace', size = 13)
+        elif app.page == 2:
+            drawImage('room1-2.jpeg', 0, 0)
+            text = "Look! There's a padlock! Maybe I should try unlocking it."
+            drawLabel(f'{text[start:app.counter+1]}', app.width*2/3, app.width*3/4 + app.width/10, font = 'monospace', size = 13)
+        elif app.page == 3:
+            drawImage('room1-2-1.jpg', 0, 0)
+        elif app.page == 4:
+            drawImage('room1-3.jpeg', 0, 0)
+            text = "I made it in! Now let's go find my friend!"
+            drawLabel(f'{text[start:app.counter+1]}', app.width*2/3, app.width*3/4 + app.width/10, font = 'monospace', size = 13)
+
+def getCurrentBox(app, x, y):
+    for row in range(3):
+        for col in range(3):
+            if (abs(x - (app.x1+col*app.blockSize + app.blockSize/2)) <= app.blockSize/2 and 
+                abs(y - (app.y1+row*app.blockSize + app.blockSize/2)) <= app.blockSize/2):
+                return row, col
+    return None
+
+def checkSolution(app):
+    prevNum = -1
+    for row in range(3):
+        for col in range(3):
+            num = app.blocks[row][col]
+            if num < prevNum and num != 0:
+                return False
+            elif num != 0:
+                prevNum = num
+    return True
+
+def drawRoom2(app):
+    x = app.width/20
+    start = max(0, app.counter-25)
+    if app.success2 != None:
+        if app.success2:
+            drawImage('room2-5.jpeg', 0, 0)
+            drawRect(x, app.width*3/4, app.width-2*x, 4*x, fill = 'gainsboro', opacity = 5)
+            drawLabel(f"{app.successText[start:app.counter+1]}", app.width*2/3, app.width*3/4 + app.width/10, font = 'monospace', size = 13)
+        else:
+            drawImage('room2-6.png', 0, 0)
+    elif app.buttons2:
+        drawImage('room2-3.jpeg', 0, 0)
+        for i in range(5):
+            cX, cY = app.circleCenters[i]
+            drawCircle(cX, cY, app.diameter/2, fill = 'grey', opacity = 50)
+    elif not app.puzzle2:
+        if app.page == 5:
+            drawImage('room2-1.jpeg', 0, 0)
+            text = "wow, there are so many cages..."
+            drawLabel(f'{text[start:app.counter+1]}', app.width*2/3, app.width*3/4 + app.width/10, font = 'monospace', size = 13)
+        elif app.page == 6:
+            drawImage('room2-2.jpeg', 0, 0)
+            text = "Hello there. You seem a bit lost. If you solve the puzzle on the table, you might just find what you're looking for."
+            drawLabel(f'{text[start:app.counter+1]}', app.width*2/3, app.width*3/4+ app.width/20, font = 'monospace', size = 13)
+        elif app.page == 7:
+            drawImage('room2-3.jpeg', 0, 0)
+    else:
+        drawImage('room2-4.jpeg', 0, 0)
+        drawLabel("HINTS:", app.buttonWidth, app.buttonWidth, align = 'left', font='monospace')
+        drawLabel(app.hints[app.hintNum], app.width/2, app.buttonWidth*4/3, font='monospace', align = 'center', size = 8)
+        for i in range(4):
+            fillCircle = None
+            if i == app.hintNum-1:
+                fillCircle = 'lightSteelBlue'
+            drawCircle(app.buttonWidth*4/3, app.buttonWidth*13/7 + i*45, 17, fill = fillCircle, border = 'black', opacity = 80)
+            drawLabel(f'{i+1}', app.buttonWidth*4/3, app.buttonWidth*13/7 + i*45)
+        drawRect(app.buttonWidth*7/2, app.buttonWidth*11/12, app.buttonWidth*3/5, x, fill = None)
+        
+        for cx, cy in app.x2Centers:
+            drawLabel('X', cx, cy)
+        for cx, cy in app.oCenters:
+            drawLabel('O', cx, cy)
+################################### Tait's Codes ###############################
+
+def drawS0134(app):
+    imageWidth, imageHeight = 400, 400
+    drawImage('s0134.PNG', app.width/2, app.height/2, align='center')
+
+def drawS2(app):
+    imageWidth, imageHeight = 400, 400
+    drawImage('s2.PNG', app.width/2, app.height/2, align='center')
+
+def drawWin(app):
+    imageWidth, imageHeight = 400, 400
+    drawImage('win.PNG', app.width/2, app.height/2, align='center')
+
+def drawLost(app):
+    imageWidth, imageHeight = 400, 400
+    drawImage('lost.PNG', app.width/2, app.height/2, align='center')
+
+def drawDoor(app):
+    imageWidth, imageHeight = 400, 400
+    drawImage('door.jpg', app.width/2, app.height/2, align='center')
+
+def drawEnd(app):
+    imageWidth, imageHeight = 400, 400
+    drawImage('end.PNG', app.width/2, app.height/2, align='center')
+
+
+
+
+# draw the interaction button
+def drawButton(app):
+    # button one
+    drawRect(120, 230, 30, 30, fill = 'black', align = 'center', opacity = 0)
+    # button two
+    drawRect(210, 230, 30, 30, fill = 'black', align = 'center', opacity = 0)
+    # button three
+    drawRect(300, 230, 30, 30, fill = 'black', align = 'center', opacity = 0)
+
+# draw the witch conversation
+def drawConversation_act5(app):
+    # draw the rect for containg the conversation
+    if app.countForText == 0:
+        #drawRect(160, 250, 230, 100, fill = 'cornSilk', border = 'white', borderWidth = 2)
+        drawLabel('Welcome to the room 5 adventurer!', 45, 290, fill = 'black', size = 10, bold = True, align = 'left')
+        drawLabel('Now you have to make your decision!', 45, 300, fill = 'black', size = 10, bold = True, align = 'left')
+        drawLabel('One door for alive :(', 45, 310, fill = 'green', size = 10, bold = True, align = 'left')
+        drawLabel('Two doors for death :)', 45, 320, fill = 'red', size = 10, bold = True, align = 'left')
+        drawLabel('<right> to next message', 45, 340, fill = 'black', size = 10, bold = True, align = 'left')
+    elif app.countForText == 1:
+        #drawRect(160, 250, 230, 100, fill = 'cornSilk', border = 'white', borderWidth = 2)
+        drawLabel('Now select the door you want to choose', 45, 290, fill = 'black', size = 10, bold = True, align = 'left')
+        drawLabel('By clickng the door handle', 45, 300, fill = 'black', size = 10, bold = True, align = 'left')
+        drawLabel('<right> to close conversation', 45, 340, fill = 'black', size = 10, bold = True, align = 'left')
+    elif app.countForText == 2 and (app.doorList[0] == True or app.doorList[1] == True or app.doorList[2] == True):
+        #drawRect(160, 250, 230, 100, fill = 'cornSilk', border = 'white', borderWidth = 2)
+        drawLabel(f'I choose door {[index + 1 for index, value in enumerate(app.doorList) if value][0] if any(app.doorList) else None}', 180, 310, fill = 'black', size = 10, bold = True, align = 'left')
+        drawLabel('<right> to next message', 250, 350, fill = 'black', size = 10, bold = True, align = 'left')
+    elif app.countForText == 3:
+        #drawRect(160, 250, 230, 100, fill = 'cornSilk', border = 'white', borderWidth = 2)
+        drawLabel('Let me give you a little hint', 45, 290, fill = 'black', size = 10, bold = True, align = 'left')
+        drawLabel(f'Door {hint(app, app.doorList)} is the death road', 45, 300, fill = 'red', size = 10, bold = True, align = 'left')
+        drawLabel('<right> to next message', 45, 340, fill = 'black', size = 10, bold = True, align = 'left')
+    elif app.countForText == 4:
+        #drawRect(160, 250, 230, 100, fill = 'cornSilk', border = 'white', borderWidth = 2)
+        drawLabel('You have one chance for switch it', 45, 290, fill = 'black', size = 10, bold = True, align = 'left')
+        drawLabel('Do you want to switch it?', 45, 300, fill = 'black', size = 10, bold = True, align = 'left')
+        drawLabel('<right> to close conversation', 45, 340, fill = 'black', size = 10, bold = True, align = 'left')
+    elif app.countForText == 5 and (checkFalse(app.doorList) == 2):
+        if app.doorList[1] == True:
+            #drawRect(160, 250, 230, 100, fill = 'cornSilk', border = 'white', borderWidth = 2)
+            # drawLabel('Congratulations! You will be alive!', 170, 290, fill = 'green', size = 10, bold = True, align = 'left')
+            drawLabel('<right> to exit the game', 250, 340, fill = 'black', size = 10, bold = True, align = 'left')
+        elif app.doorList[1] == False:
+            #drawRect(160, 250, 230, 100, fill = 'cornSilk', border = 'white', borderWidth = 2)
+            # drawLabel('DEAAAAAAAAAATH', 170, 290, fill = 'red', size = 10, bold = True, align = 'left')
+            drawLabel('<right> to exit the game', 50, 340, fill = 'black', size = 10, bold = True, align = 'left')
+    # elif app.countForText == 6:
+    #     drawRect(200, 200, 400, 400, fill = 'cornSilk', border = 'white', borderWidth = 2, align = 'center')
+    #     drawLabel('Game Over', 200, 200, fill = 'black', size = 10, bold = True, align = 'center')
+
+# Reshape the list during 5th
+def reShapeTheList(app):
+        app.doorList = [False, False, False]
+        #print(app.doorList)
+
+# give the hint for which is the death door
+def hint(app, L):
+    if L[0] == True:
+        return 3
+    elif L[1] == True:
+        return random.randint(1, 3)
+    elif L[2] == True:
+        return 1
+
+
+# Helper function to check how many False in app.doorList
+def checkFalse(L):
+    count = 0
+    for item in L:
+        if item == False:
+            count += 1
+    return count
+
+# track the number to control the right value
+def trackRight(app):
+    if app.countForText == 2 and (app.doorList[0] == False and app.doorList[1] == False and app.doorList[2] == False):
+        app.rightArrow = False
+    else:
+        app.rightArrow = True
+
+
+#===============================================================================
+
+
+# checking key press for texting
+def onKeyPress(app, key):
+    if app.intro:
+        if key == 'right' and app.counter > 6:
+            app.rightClick = True
+    if app.oneAndTwo:
+        if key == 'space' and not app.puzzle1 and not app.puzzle2:
+            if app.page == 4:
+                app.room1 = False
+                app.room2 = True
+            else:
+                app.counter = 0
+            app.page += 1
+        if app.puzzle1 and app.highlight!=None:
+            x, y = app.highlight
+            x0, y0 = app.zeroIndex
+            if key == 'enter':
+                print(checkSolution(app))
+            elif key == 'down' and x-x0==-1 and y==y0:
+                if x + 1 < 3:
+                    app.blocks[x][y], app.blocks[x+1][y] = app.blocks[x+1][y], app.blocks[x][y]
+                    app.zeroIndex = (x, y)
+            elif key == 'up' and x-x0==1 and y==y0:
+                if x - 1 >= 0:
+                    app.blocks[x][y], app.blocks[x-1][y] = app.blocks[x-1][y], app.blocks[x][y]
+                    app.zeroIndex = (x, y)
+            elif key == 'left' and x==x0 and y-y0==1:
+                if y - 1 >= 0:
+                    app.blocks[x][y], app.blocks[x][y-1] = app.blocks[x][y-1], app.blocks[x][y]
+                    app.zeroIndex = (x, y)
+            elif key == 'right' and x==x0 and y-y0==-1:
+                if y + 1 < 3:
+                    app.blocks[x][y], app.blocks[x][y+1] = app.blocks[x][y+1], app.blocks[x][y]
+                    app.zeroIndex = (x, y)
+            if checkSolution(app):
+                app.puzzle1 = False
+
+        elif app.puzzle2:
+            if key == 'right':
+                app.hintNum = (app.hintNum + 1)%5
+            elif key == 'left' and app.hintNum > 1:
+                app.hintNum = (app.hintNum - 1)%4
+
+
+    ##### Troy #####
+    if app.three:
+        if key == 'space':
+            app.three = False
+            app.four = True
+
+    if app.four:
+        if key == 'right':
+            if app.countForText == 2 and (checkFalse(app.doorList) == 3):
+                app.rightArrow = False
+            elif app.countForText == 2 and (checkFalse(app.doorList) == 2):
+                app.rightArrow = True
+            
+            if app.countForText == 4:
+                reShapeTheList(app)
+
+            if app.countForText == 5 and (checkFalse(app.doorList) == 3):
+                app.rightArrow = False
+            elif app.countForText == 5 and (checkFalse(app.doorList) == 2):
+                app.rightArrow = True 
+
+            if app.countForText < 6 and app.rightArrow == True:
+                app.countForText += 1
+                #print(app.countForText)
+        
+# Check if you are cliking on any buttons
+def onMousePress(app, mouseX, mouseY):
+    if app.intro:
+        if (0 < mouseX < 400) and (0 < mouseY < 400) and (app.rightClick == True):
+            app.intro = False
+            app.oneAndTwo = True
+    
+    ##### Felicia's Codes ######
+    if app.oneAndTwo:
+        if app.room1:
+            if ((app.x1+3*app.blockSize <= mouseX <= app.x1+4*app.blockSize) and 
+                (app.y1+3/2*app.blockSize <= mouseY <= app.y1+3*app.blockSize)):
+                app.puzzle1 = True
+            elif app.puzzle1:
+                if app.highlight != None:
+                    app.boxPressed = True
+        elif app.room2:
+            if ((app.width/2 <= mouseX <= app.width/2 + app.buttonWidth)
+                and (app.height*9/10 <= mouseY <= app.height*9/10 + app.buttonWidth/2)):
+                app.puzzle2 = True
+            elif app.puzzle2:
+                if (app.buttonWidth*7/2 <= mouseX <= app.buttonWidth*7/2 + app.buttonWidth*3/5):
+                    x = app.width/20
+                    if (app.buttonWidth*11/12 <= mouseY <= app.buttonWidth*11/12 + x):
+                        app.puzzle2 = False
+                        app.buttons2 = True
+                    elif (app.buttonWidth*27/8 <= mouseY <= app.buttonWidth*27/8 + x*3/2):
+                        app.x2Centers = set()
+                        app.oCenters = set()
+                else:
+                    newCenterPoint = (mouseX, mouseY)
+                    if newCenterPoint in app.x2Centers:
+                        app.oCenters.add(newCenterPoint)
+                        app.x2Centers.remove(newCenterPoint)
+                    elif newCenterPoint in app.oCenters:
+                        app.x2Centers.add(newCenterPoint)
+                        app.oCenters.remove(newCenterPoint)
+                    else:
+                        app.x2Centers.add(newCenterPoint)
+            elif app.buttons2:
+                for i in range(len(app.circleCenters)):
+                    cX, cY = app.circleCenters[i]
+                    if abs(mouseX - cX) <= app.diameter/2 and abs(mouseY - cY) <= app.diameter/2:
+                        if i == app.circleAnswer - 1:
+                            app.success2 = True
+                        else:
+                            app.success2 = False
+                        app.buttons2 = False
+
+    ##### Troy's Codes #####
+    if app.three:
+        cookbook_labels_list = [False, False, False, False, False]
+        for i in range(5):
+            if (mouseX > app.cookbook_label_x and mouseX < app.cookbook_label_x+app.cookbook_label_width 
+                and mouseY > app.cookbook_main_y+app.cookbook_label_height*i
+                and mouseY < app.cookbook_main_y+app.cookbook_label_height*(i+1)):
+                for j in range(5):
+                    cookbook_labels_list[j] = False
+                    cookbook_labels_list[i] = True
+                    app.cookbook_burger = cookbook_labels_list[0]
+                    app.cookbook_hotdog = cookbook_labels_list[1]
+                    app.cookbook_ramen = cookbook_labels_list[2]
+                    app.cookbook_sushi = cookbook_labels_list[3]
+                    app.cookbook_pie = cookbook_labels_list[4]
+            if app.cookbook_hotdog:
+                if (mouseX > app.continueX and mouseX < app.continueX + app.continueWidth
+                    and mouseY > app.continueY and mouseY < app.continueY + app.continueHeight):
+                    app.drawCookbook = False
+                    app.drawMove = True
+            if app.cuttingBoard:
+                if mouseX>160 and mouseX<240 and mouseY<345 and mouseY>295:
+                    app.hotdogclickyes = True
+            ##### Tait #####
+            if app.four:
+                if (115 < mouseX < 145) and (225 < mouseY < 255):
+                    app.doorList[0] = True
+                    #print(app.doorList)
+                elif (215 < mouseX < 245) and (225 < mouseY < 255):
+                    app.doorList[1] = True
+                    #print(app.doorList)
+                elif (315 < mouseX < 345) and (225 < mouseY < 255):
+                    app.doorList[2] = True
+                    #print(app.doorList)
+    
+    if app.four:
+        if (105 < mouseX < 135) and (215 < mouseY < 245):
+            app.doorList[0] = True
+            #print(app.doorList)
+        elif (195 < mouseX < 225) and (215 < mouseY < 245):
+            app.doorList[1] = True
+            #print(app.doorList)
+        elif (285 < mouseX < 315) and (215 < mouseY < 245):
+            app.doorList[2] = True
+            #print(app.doorList)
+
+
+def onMouseMove(app, mouseX, mouseY):
+    if app.oneAndTwo:
+        if app.puzzle1:
+                app.prevBox = app.highlight
+                app.highlight = getCurrentBox(app, mouseX, mouseY)
+                if app.prevBox != app.highlight:
+                    app.boxPressed = False
+
+def onKeyHold(app, keys):
+    if app.three:
+        if app.drawMove and not app.pause:
+            app.stepsPerSecond = 30
+            if 'w' in keys:
+                app.cy -= 2
+            elif 's' in keys:
+                app.cy += 2
+            if 'a' in keys:
+                app.cx -= 2
+            elif 'd' in keys:
+                app.cx += 2
+
+    if app.cx<115 and app.cy<145:
+            if app.drawMove and not app.pause and not app.noSausage:
+                app.pause = True
+                app.drawSausage = True
+                app.bag.add('sausage')
+
+    elif app.cx<80 and app.cy>270:        
+        if app.drawMove and not app.pause and not app.noBread:
+            app.pause = True
+            app.drawBread = True
+            app.bag.add('bread')
+
+    elif app.cx>290 and app.cy<180:
+        if app.drawMove and not app.pause and not app.noFire:
+            app.pause = True
+            app.drawFire = True
+            app.bag.add('fire')
+    
+    elif app.cx>280 and app.cy>300:
+        if app.drawMove and not app.pause and not app.noMayon:
+            app.pause = True
+            app.drawMayon = True
+            app.bag.add('mayon')
+
+    if app.bag == {'sausage', 'bread', 'fire', 'mayon'}:
+        app.cuttingBoard = True
+    
+    if app.cuttingBoard:
+        if app.cx>270 and app.cy<120:
+            app.makeHotdog = True
+            app.hotdog = True
+    if app.cx<115 and app.cy<145:
+        if app.drawMove and not app.pause and not app.noSausage:
+            app.pause = True
+            app.drawSausage = True
+            app.bag.add('sausage')
+
+        elif app.cx<80 and app.cy>270:        
+            if app.drawMove and not app.pause and not app.noBread:
+                app.pause = True
+                app.drawBread = True
+                app.bag.add('bread')
+
+        elif app.cx>290 and app.cy<180:
+            if app.drawMove and not app.pause and not app.noFire:
+                app.pause = True
+                app.drawFire = True
+                app.bag.add('fire')
+        
+        elif app.cx>280 and app.cy>300:
+            if app.drawMove and not app.pause and not app.noMayon:
+                app.pause = True
+                app.drawMayon = True
+                app.bag.add('mayon')
+
+        if app.bag == {'sausage', 'bread', 'fire', 'mayon'}:
+            app.cuttingBoard = True
+        
+        if app.cuttingBoard:
+            if app.cx>270 and app.cy<120:
+                app.makeHotdog = True
+                app.hotdog = True
+
+        
+##### Tait #####
+def onKeyPress(app, key):
+    if app.intro:
+        if key == 'right' and app.counter > 6:
+            app.rightClick = True
+
+    if app.oneAndTwo:
+        if key == 'space' and not app.puzzle1 and not app.puzzle2:
+            if app.page == 4:
+                app.room1 = False
+                app.room2 = True
+            else:
+                app.counter = 0
+            app.page += 1
+        if app.puzzle1 and app.highlight!=None:
+            x, y = app.highlight
+            x0, y0 = app.zeroIndex
+            if key == 'enter':
+                print(checkSolution(app))
+            elif key == 'down' and x-x0==-1 and y==y0:
+                if x + 1 < 3:
+                    app.blocks[x][y], app.blocks[x+1][y] = app.blocks[x+1][y], app.blocks[x][y]
+                    app.zeroIndex = (x, y)
+            elif key == 'up' and x-x0==1 and y==y0:
+                if x - 1 >= 0:
+                    app.blocks[x][y], app.blocks[x-1][y] = app.blocks[x-1][y], app.blocks[x][y]
+                    app.zeroIndex = (x, y)
+            elif key == 'left' and x==x0 and y-y0==1:
+                if y - 1 >= 0:
+                    app.blocks[x][y], app.blocks[x][y-1] = app.blocks[x][y-1], app.blocks[x][y]
+                    app.zeroIndex = (x, y)
+            elif key == 'right' and x==x0 and y-y0==-1:
+                if y + 1 < 3:
+                    app.blocks[x][y], app.blocks[x][y+1] = app.blocks[x][y+1], app.blocks[x][y]
+                    app.zeroIndex = (x, y)
+            if checkSolution(app):
+                app.puzzle1 = False
+
+        elif app.puzzle2:
+            if key == 'right':
+                app.hintNum = (app.hintNum + 1)%5
+            elif key == 'left' and app.hintNum > 1:
+                app.hintNum = (app.hintNum - 1)%4
+        if app.success2:
+            if key=='space':
+                app.oneAndTwo = False
+                app.three = True
+    if app.three:
+        if app.hotdogclickyes and key=='space':
+            app.three = False
+            app.four = True
+    if app.four:
+        if key == 'right':
+            if app.countForText == 2 and (checkFalse(app.doorList) == 3):
+                app.rightArrow = False
+            elif app.countForText == 2 and (checkFalse(app.doorList) == 2):
+                app.rightArrow = True
+            
+            if app.countForText == 4:
+                reShapeTheList(app)
+
+            if app.countForText == 5 and (checkFalse(app.doorList) == 3):
+                app.rightArrow = False
+            elif app.countForText == 5 and (checkFalse(app.doorList) == 2):
+                app.rightArrow = True 
+
+            if app.countForText < 6 and app.rightArrow == True:
+                app.countForText += 1
+                #print(app.countForText)
+
+
+def onStep(app):
+    if app.intro:
+        app.counter += 1
+    # print(drawBackground)
+
+
+    ##### Felicia's Codes ######
+    if app.oneAndTwo:
+        app.counter += 1
+        app.stepsPerSecond = 4
+        
+
+    ##### Troy's Codes #####
+    if app.three:
+        if app.pause:
+            app.pauseCounter += 1
+        if app.pauseCounter == 20:
+            app.pause = False
+            app.pauseCounter = 0
+            if 'fire' in app.bag:
+                app.noFire = True
+            if 'sausage' in app.bag:
+                app.noSausage = True
+            if 'bread' in app.bag:
+                app.noBread = True
+            if 'mayon' in app.bag:
+                app.noMayon = True
+        
+
+
+def main():
+  runApp()
+
+main()

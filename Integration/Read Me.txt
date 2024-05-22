@@ -1,0 +1,47 @@
+﻿Read Me:
+
+
+Description:
+"Trick or Treat" is an indie-inspired Halloween escape room adventure coded entirely in Python. Immerse yourself in a mysterious house that materializes on Halloween night. Two trick-or-treating friends find themselves ensnared by enigmatic forces within. The house's owner, a logic puzzle enthusiast, challenges our protagonist to rescue their friend and escape the eerie manor.
+
+
+Features:
+Innovative Puzzles: Dive into a logic-based escape room experience, featuring captivating math and logic puzzles.
+Halloween Theme: Embrace the Halloween spirit with our themed adventure, compensating for missed Halloweekend festivities.
+Collaborative Effort: Overcoming challenges, we worked collaboratively, solving problems, and learning together in a computer science environment.
+Flexible Structure: Our project boasts various puzzles created with the cmu_graphics package and a unique art style. Moreover, its flexible structure enables easy addition/removal of levels and the creation of alternate/random maps, ensuring continuous growth and excitement for players.
+User-Friendly: Download the apk directly from our GitHub repository and embark on your "Trick or Treat" adventure hassle-free.
+
+
+Purpose/What We Learned:
+Our group decided to create a game because we thought it would be fun to create something that we could not just code but also ‘play through’.  We enjoy math/logic puzzles, so we decided to incorporate that within the game, and created a logic based escape room.  Additionally, we chose a Halloween theme since we missed out on some of the Halloweekend festivities due to last minute midterm studying (oops).  Throughout the process, we faced a number of challenges such as figuring out how to implement each of our ideas and work together on separate devices.  To combat these issues, we created a highly detailed planning document and tried to simplify the code needed to realize each of the minigames.  We worked separately on different puzzles and put our code together in the morning.  While similar variable names caused some confusion, having comments in the original code for each section was very helpful.
+
+
+In the end, we each learned a lot not just about coding but also working collaboratively on a computer science program. This was especially the case since most of us had no previous experience collaboratively producing a CS program.  
+
+
+To start the program:
+Run integration.py
+
+
+Required Modules:
+cmu_graphics
+
+
+Credits:
+
+
+License:
+MIT License
+Copyright (c) 2023 Amy Ma, Felicia Zhang, Troy Wang, Tait Duan
+
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
